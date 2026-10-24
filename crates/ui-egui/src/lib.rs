@@ -1862,14 +1862,28 @@ impl EffectcraftApp {
     }
 }
 
-impl eframe::App for EffectcraftApp {
-    fn on_exit(&mut self) {
+impl EffectcraftApp {
+    /// The app quits: save the workspace and end crash recovery. Public for hosts whose
+    /// `eframe::App::on_exit` has the other signature (see the `glow` feature).
+    pub fn shutdown(&mut self) {
         self.save_workspace_state();
         // Clean exit: no crash recovery next launch (unless the graphics device was lost with
         // unsaved changes, which are in the auto-save it offers).
         if self.device_lost_close != Some(true) {
             self.session.end_recovery();
         }
+    }
+}
+
+impl eframe::App for EffectcraftApp {
+    #[cfg(not(feature = "glow"))]
+    fn on_exit(&mut self) {
+        self.shutdown();
+    }
+
+    #[cfg(feature = "glow")]
+    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        self.shutdown();
     }
 
     fn raw_input_hook(&mut self, ctx: &egui::Context, raw_input: &mut egui::RawInput) {

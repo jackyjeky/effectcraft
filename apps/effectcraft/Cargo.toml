@@ -9,6 +9,12 @@ default-run = "effectcraft"
 [lints]
 workspace = true
 
+[features]
+# `glow`: the OpenGL window renderer macOS falls back to on Macs without Metal (OpenCore Legacy
+# Patcher, Sandy Bridge etc.); wgpu stays the default everywhere (see `window_renderer` in main.rs).
+default = ["glow"]
+glow = ["eframe/glow", "effectcraft-ui-egui/glow"]
+
 [dependencies]
 effectcraft-engine = { workspace = true }
 effectcraft-host = { workspace = true }

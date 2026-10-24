@@ -174,6 +174,8 @@ fn main() -> eframe::Result {
     // stopped as its window opened (a crashing graphics driver, #243).
     let mut launch = launch_guard::Launch::begin(effectcraft_host::config_dir().as_deref(), std::env::var_os("WGPU_BACKEND").is_some());
     let on_gl = launch.backends == Some(eframe::wgpu::Backends::GL);
+    let renderer = window_renderer(on_gl, std::env::var("EFFECTCRAFT_RENDERER").ok().as_deref());
+    log::info!("window renderer: {renderer:?}");
     let notice = launch.notice.take();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -187,7 +189,9 @@ fn main() -> eframe::Result {
             // Wayland matches the window to `ai.storyteller.effectcraft.desktop` by this ID.
             .with_app_id(appimage::APP_ID),
         event_loop_builder: agent_event_loop(control_port.is_some()),
-        wgpu_options: wgpu_options(launch.backends),
+        renderer,
+        // wgpu's own OpenGL backend doesn't exist on macOS: there `on_gl` means the glow renderer.
+        wgpu_options: wgpu_options(launch.backends.filter(|_| cfg!(not(target_os = "macos")))),
         ..Default::default()
     };
     // Start-up milestones go to stderr and the session log, so a window that never appears
@@ -349,10 +353,25 @@ fn main() -> eframe::Result {
             if on_gl {
                 launch_guard::opengl_failed(effectcraft_host::config_dir().as_deref());
             }
-            startup_failed(e, !on_gl && cfg!(not(target_os = "macos")));
+            startup_failed(e, !on_gl);
         }
     }
     result
+}
+
+/// Which eframe renderer draws the window. wgpu (Metal / Vulkan / Direct3D) is the default; with
+/// the `glow` feature compiled in, eframe would otherwise pick glow itself, so it is named here.
+/// glow (OpenGL 2.1+) is used when the launch guard switched Window Graphics to OpenGL, or when
+/// `EFFECTCRAFT_RENDERER=glow` asks for it. On macOS that is the way to run on Macs without
+/// Metal (OpenCore Legacy Patcher on Sandy Bridge / Ivy Bridge): the GPU compositor then stays
+/// on the CPU, as `init_gpu` does whenever there is no wgpu device.
+fn window_renderer(on_gl: bool, env: Option<&str>) -> eframe::Renderer {
+    match env.map(str::to_ascii_lowercase).as_deref() {
+        Some("glow" | "gl" | "opengl") => eframe::Renderer::Glow,
+        Some("wgpu") => eframe::Renderer::Wgpu,
+        _ if on_gl && cfg!(target_os = "macos") => eframe::Renderer::Glow,
+        _ => eframe::Renderer::Wgpu,
+    }
 }
 
 /// The window's wgpu device asks for the adapter's own limits (textures up to 16384 px)
@@ -415,6 +434,14 @@ fn startup_failed(e: &eframe::Error, gl_next: bool) {
         .show();
 }
 
+impl Desktop {
+    fn shutdown(&mut self) {
+        self.launch.exited();
+        self.window.save(self.app.session.config.as_deref());
+        self.app.shutdown();
+    }
+}
+
 /// The desktop app: the egui app plus, on macOS, the system menu bar.
 struct Desktop {
     app: EffectcraftApp,
@@ -451,10 +478,15 @@ impl eframe::App for Desktop {
         }
     }
 
+    // eframe's `glow` feature (compiled in for Macs without Metal) gives `on_exit` a GL context.
+    #[cfg(not(feature = "glow"))]
     fn on_exit(&mut self) {
-        self.launch.exited();
-        self.window.save(self.app.session.config.as_deref());
-        self.app.on_exit();
+        self.shutdown();
+    }
+
+    #[cfg(feature = "glow")]
+    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        self.shutdown();
     }
 
     fn raw_input_hook(&mut self, ctx: &egui::Context, raw_input: &mut egui::RawInput) {
