@@ -1,0 +1,86 @@
+{
+  "format": "effectcraft.animationPresets/1",
+  "notes": "Original EffectCraft synthetic presets (MIT OR Apache-2.0), written from scratch on EffectCraft grid, noise, color, and distortion effects. Key times are seconds from current time.",
+  "presets": [
+    {
+      "id": "digitalGridField",
+      "name": "Digital Grid Field",
+      "category": "Synthetics",
+      "description": "Futuristic digital grid with glowing lines over a dark ground.",
+      "effects": [
+        {
+          "effect": "ec.generate.grid",
+          "set": {
+            "sizeFrom": 1,
+            "width": 48.0,
+            "border": 2.0,
+            "color": [0.15, 0.55, 0.95, 1.0],
+            "opacity": 90.0
+          }
+        },
+        {
+          "effect": "ec.stylize.glow",
+          "set": {
+            "threshold": 30.0,
+            "radius": 15.0,
+            "intensity": 1.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "fractalPlasma",
+      "name": "Fractal Plasma Loop",
+      "category": "Synthetics",
+      "description": "Evolving multi-color plasma energy field driven by continuous noise evolution.",
+      "effects": [
+        {
+          "effect": "ec.noise.fractal",
+          "set": {
+            "contrast": 150.0,
+            "brightness": -10.0,
+            "complexity": 5.0,
+            "transform/scale": 280.0
+          },
+          "expr": {
+            "evolution": "time * 45.0"
+          }
+        },
+        {
+          "effect": "ec.color.tint",
+          "set": {
+            "black": [0.08, 0.02, 0.25, 1.0],
+            "white": [0.95, 0.35, 0.85, 1.0],
+            "amount": 100.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "checkerboardTunnel",
+      "name": "Checkerboard Tunnel",
+      "category": "Synthetics",
+      "description": "Optical checkerboard pattern animated with a twisting distortion wave.",
+      "effects": [
+        {
+          "effect": "ec.generate.checkerboard",
+          "set": {
+            "sizeFrom": 1,
+            "width": 64.0,
+            "color": [0.95, 0.95, 0.95, 1.0],
+            "opacity": 100.0
+          }
+        },
+        {
+          "effect": "ec.distort.twirl",
+          "set": {
+            "radius": 80.0
+          },
+          "expr": {
+            "angle": "120.0 + Math.sin(time * 2.5) * 60.0"
+          }
+        }
+      ]
+    }
+  ]
+}

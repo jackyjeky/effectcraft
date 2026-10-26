@@ -1,0 +1,7 @@
+asset:        behaviors.json
+title:        EffectCraft behavior animation presets (Autoscroll Horizontal, Autoscroll Vertical, Rotate Continuously, Pulse Opacity, Wiggle Position, Wiggle Scale, Scale Bounce In, Drift and Fade)
+author:       EffectCraft contributors
+source:       original work
+license:      MIT OR Apache-2.0
+added:        2026-10-26 by EffectCraft agent
+notes:        Original behavior animation presets built on EffectCraft expressions and keyframing; not derived from any Adobe preset (.ffx).

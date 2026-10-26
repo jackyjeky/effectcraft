@@ -1,0 +1,50 @@
+{
+  "format": "effectcraft.animationPresets/1",
+  "notes": "Original EffectCraft image utility presets (MIT OR Apache-2.0), written from scratch on EffectCraft channel, tint, and color effects.",
+  "presets": [
+    {
+      "id": "alphaFromLightness",
+      "name": "Alpha from Lightness (Unmult)",
+      "category": "Image - Utilities",
+      "description": "Extracts alpha channel transparency from luminance (black backgrounds become transparent).",
+      "effects": [
+        {
+          "effect": "ec.channel.shiftchannels",
+          "set": {
+            "takeAlphaFrom": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "invertAlpha",
+      "name": "Invert Alpha",
+      "category": "Image - Utilities",
+      "description": "Inverts the layer's alpha transparency channel while leaving RGB color untouched.",
+      "effects": [
+        {
+          "effect": "ec.channel.invert",
+          "set": {
+            "channel": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "subtleVignette",
+      "name": "Subtle Vignette",
+      "category": "Image - Utilities",
+      "description": "Soft perimeter darkening using a subtle tint blend.",
+      "effects": [
+        {
+          "effect": "ec.color.tint",
+          "set": {
+            "black": [0.0, 0.0, 0.0, 1.0],
+            "white": [0.85, 0.85, 0.85, 1.0],
+            "amount": 35.0
+          }
+        }
+      ]
+    }
+  ]
+}

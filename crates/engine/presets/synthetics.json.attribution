@@ -1,0 +1,7 @@
+asset:        synthetics.json
+title:        EffectCraft synthetic animation presets (Digital Grid Field, Fractal Plasma Loop, Checkerboard Tunnel)
+author:       EffectCraft contributors
+source:       original work
+license:      MIT OR Apache-2.0
+added:        2026-10-26 by EffectCraft agent
+notes:        Original procedural and synthetic generator presets built on EffectCraft grid, noise, color, and distort effects; not derived from any Adobe preset (.ffx).

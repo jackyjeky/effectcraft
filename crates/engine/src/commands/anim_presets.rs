@@ -26,13 +26,22 @@ pub const TRANSITIONS_JSON: &str = include_str!("../../presets/transitions.json"
 /// The original background presets (`presets/backgrounds.json`).
 pub const BACKGROUNDS_JSON: &str = include_str!("../../presets/backgrounds.json");
 
+/// The original behavior presets (`presets/behaviors.json`).
+pub const BEHAVIORS_JSON: &str = include_str!("../../presets/behaviors.json");
+
+/// The original synthetic presets (`presets/synthetics.json`).
+pub const SYNTHETICS_JSON: &str = include_str!("../../presets/synthetics.json");
+
+/// The original image utility presets (`presets/image_utilities.json`).
+pub const IMAGE_UTILITIES_JSON: &str = include_str!("../../presets/image_utilities.json");
+
 /// Keys per animated property, so a hostile inline preset can't allocate without bound.
 const MAX_KEYS: usize = 256;
 /// Longest expression text an inline preset may carry.
 const MAX_EXPR: usize = 4096;
 
 fn presets() -> Vec<Value> {
-    [TRANSITIONS_JSON, BACKGROUNDS_JSON]
+    [TRANSITIONS_JSON, BACKGROUNDS_JSON, BEHAVIORS_JSON, SYNTHETICS_JSON, IMAGE_UTILITIES_JSON]
         .iter()
         .flat_map(|src| serde_json::from_str::<Value>(src).ok().and_then(|v| v.get("presets").and_then(Value::as_array).cloned()).unwrap_or_default())
         .collect()

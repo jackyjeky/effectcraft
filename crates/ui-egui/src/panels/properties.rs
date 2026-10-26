@@ -9,7 +9,7 @@
 //! - **Text Animation** (text layers): Add Animator menu.
 
 use effectcraft_engine::keyframe::{Justify, TextDoc, Value};
-use effectcraft_engine::project::{Layer, LayerSource, Property};
+use effectcraft_engine::project::{Layer, LayerSource, ParamUi, PropGroup, Property};
 use effectcraft_engine::render::EvalCtx;
 use egui::{Align2, Color32, Rect, Sense, Stroke, pos2, vec2};
 use serde_json::json;

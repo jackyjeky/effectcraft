@@ -1,0 +1,7 @@
+asset:        image_utilities.json
+title:        EffectCraft image utility animation presets (Alpha From Lightness / Unmult, Invert Alpha, Subtle Vignette)
+author:       EffectCraft contributors
+source:       original work
+license:      MIT OR Apache-2.0
+added:        2026-10-26 by EffectCraft agent
+notes:        Original image utility presets built on EffectCraft channel and tint effects; not derived from any Adobe preset (.ffx).

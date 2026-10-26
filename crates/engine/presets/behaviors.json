@@ -1,0 +1,96 @@
+{
+  "format": "effectcraft.animationPresets/1",
+  "notes": "Original EffectCraft behavior animation presets (MIT OR Apache-2.0), written from scratch using layer transform keyframes and deterministic expressions. Key times are seconds from the current time.",
+  "presets": [
+    {
+      "id": "autoscrollHorizontal",
+      "name": "Autoscroll - Horizontal",
+      "category": "Behaviors",
+      "description": "Smooth continuous horizontal movement driven by a time expression.",
+      "layer": {
+        "expr": { "transform/position": "[value[0] + time * 120.0, value[1]]" }
+      }
+    },
+    {
+      "id": "autoscrollVertical",
+      "name": "Autoscroll - Vertical",
+      "category": "Behaviors",
+      "description": "Smooth continuous vertical movement driven by a time expression.",
+      "layer": {
+        "expr": { "transform/position": "[value[0], value[1] + time * 120.0]" }
+      }
+    },
+    {
+      "id": "rotateContinuously",
+      "name": "Rotate Continuously",
+      "category": "Behaviors",
+      "description": "Constant 360-degree rotation over time at 90 degrees per second.",
+      "layer": {
+        "expr": { "transform/rotation": "(value + time * 90.0) % 360.0" }
+      }
+    },
+    {
+      "id": "pulseOpacity",
+      "name": "Pulse Opacity",
+      "category": "Behaviors",
+      "description": "Gently pulses layer opacity between 40% and 100% in a smooth sine wave.",
+      "layer": {
+        "expr": { "transform/opacity": "70.0 + 30.0 * Math.sin(time * 3.5)" }
+      }
+    },
+    {
+      "id": "wigglePosition",
+      "name": "Wiggle - Position",
+      "category": "Behaviors",
+      "description": "Organic random 2D position wiggle at 2 Hz frequency with 35 px amplitude.",
+      "layer": {
+        "expr": { "transform/position": "wiggle(2.0, 35.0)" }
+      }
+    },
+    {
+      "id": "wiggleScale",
+      "name": "Wiggle - Scale",
+      "category": "Behaviors",
+      "description": "Organic pulsing scale variation at 3 Hz frequency with 10% amplitude.",
+      "layer": {
+        "expr": { "transform/scale": "wiggle(3.0, 10.0)" }
+      }
+    },
+    {
+      "id": "scaleBounceIn",
+      "name": "Scale Bounce In",
+      "category": "Behaviors",
+      "description": "Layer scales up from 0 with an elastic overshoot bounce.",
+      "layer": {
+        "keys": {
+          "transform/scale": [
+            [0.0, [0.0, 0.0, 100.0]],
+            [0.35, [115.0, 115.0, 100.0]],
+            [0.55, [95.0, 95.0, 100.0]],
+            [0.75, [100.0, 100.0, 100.0]]
+          ]
+        },
+        "ease": true
+      }
+    },
+    {
+      "id": "driftAndFade",
+      "name": "Drift and Fade",
+      "category": "Behaviors",
+      "description": "Layer gently drifts upward while fading to transparent over 2 seconds.",
+      "layer": {
+        "keys": {
+          "transform/position": [
+            [0.0, [0.0, 0.0]],
+            [2.0, [0.0, -60.0]]
+          ],
+          "transform/opacity": [
+            [0.0, 100.0],
+            [2.0, 0.0]
+          ]
+        },
+        "ease": true
+      }
+    }
+  ]
+}

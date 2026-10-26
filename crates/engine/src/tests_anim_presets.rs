@@ -78,7 +78,7 @@ fn transition_preset_by_name_and_bad_input() {
 #[test]
 fn preset_catalogue_is_unique_and_categorised() {
     let all = crate::animation_presets();
-    let known = ["Transitions", "Backgrounds"];
+    let known = ["Transitions", "Backgrounds", "Behaviors", "Synthetics", "Image - Utilities"];
     let mut ids = std::collections::HashSet::new();
     let mut names = std::collections::HashSet::new();
     for (id, name, cat) in &all {
@@ -91,6 +91,48 @@ fn preset_catalogue_is_unique_and_categorised() {
     }
     let n = |c: &str| all.iter().filter(|(_, _, k)| k == c).count();
     assert!(n("Backgrounds") >= 15 && n("Transitions") >= 20);
+    assert!(n("Behaviors") >= 5 && n("Synthetics") >= 3 && n("Image - Utilities") >= 3);
+}
+
+#[test]
+fn every_behavior_preset_applies_and_undoes() {
+    let (mut s, solid) = session();
+    let list = s.execute("anim.builtinPresets", json!({"category": "Behaviors"})).unwrap();
+    let list = list.as_array().unwrap().clone();
+    assert!(list.len() >= 5, "{}", list.len());
+    for p in &list {
+        let id = p["id"].as_str().unwrap();
+        let r = s.execute("anim.applyBuiltinPreset", json!({"layers": [solid], "preset": id})).unwrap();
+        assert_eq!(r["skipped"], json!([]), "{id}: every path and expression in the behavior applies");
+        s.execute("edit.undo", json!({})).unwrap();
+        let l = &s.active_comp().unwrap().layers[0];
+        assert_eq!(l.props.prop("transform/position").unwrap().expr, None, "{id}: undo removes expression");
+        assert!(l.props.prop("transform/scale").unwrap().keys.is_empty(), "{id}: undo removes keys");
+        s.execute("edit.redo", json!({})).unwrap();
+        s.execute("edit.undo", json!({})).unwrap();
+    }
+}
+
+#[test]
+fn every_synthetic_and_utility_preset_applies_and_undoes() {
+    let (mut s, solid) = session();
+    for cat in ["Synthetics", "Image - Utilities"] {
+        let list = s.execute("anim.builtinPresets", json!({"category": cat})).unwrap();
+        let list = list.as_array().unwrap().clone();
+        assert!(list.len() >= 3, "{cat}: {}", list.len());
+        for p in &list {
+            let id = p["id"].as_str().unwrap();
+            let r = s.execute("anim.applyBuiltinPreset", json!({"layers": [solid], "preset": id})).unwrap();
+            assert_eq!(r["skipped"], json!([]), "{id}: every path and effect in preset applies");
+            let n = r["effects"].as_array().unwrap().len();
+            assert!(n >= 1, "{id}: expected at least 1 effect");
+            s.execute("edit.undo", json!({})).unwrap();
+            let l = &s.active_comp().unwrap().layers[0];
+            assert_eq!(l.effects().map_or(0, |fx| fx.groups().count()), 0, "{id}: undo removes effects");
+            s.execute("edit.redo", json!({})).unwrap();
+            s.execute("edit.undo", json!({})).unwrap();
+        }
+    }
 }
 
 #[test]
